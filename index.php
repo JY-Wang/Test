@@ -87,12 +87,13 @@ if(isset($_POST['key']))
         $result = $conn->query($sql);
         if (mysqli_num_rows($result)> 0)
         {
-            echo "<p align='center'>Found " .mysqli_num_rows($result) ." results.</p>";
+            echo "<p align='center'>Found " .mysqli_num_rows($result) ." results for <font color=red>$_POST[key]</font>.</p>";
             echo "<table border=1px solid #999; width='343'>";
-            echo "<tr><th>username</th><th>password</th></tr>";
+            echo "<tr><th>USERNAME</th><th>PASSWORD</th><th>DATASOUCE</th></tr>";
             while ($row = $result->fetch_assoc())
             {
-                echo "<tr><td>" . $row["username"] ."</td><td> "  . $row["password"]."</td>";
+                $source = $conn->query("SELECT * FROM data_info WHERE endid > $row[id] AND startid < $row[id] ")->fetch_assoc();
+                echo "<tr><td>" . $row["username"] ."</td><td> " . $row["password"]."</td><td>" . $source["source"] ."</td>";
             }
             echo "</table>";
         }
