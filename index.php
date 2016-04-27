@@ -5,8 +5,8 @@
     <meta http-equiv="Content-Type" content="text/html" charset="utf-8">
     <style type="text/css">
         *{font-family:Tahoma, Arial, Helvetica, Sans-serif,"宋体";}
-        table{
-
+        table
+        {
             margin:0px auto;
             font:Georgia 11px;
             font-size:12px;
@@ -14,7 +14,8 @@
             text-align:center;
             border-collapse:collapse;/*细线表格代码*/
         }
-        table td{
+        table td
+        {
             border:1px solid #999;/*细线表格线条颜色*/
             height:22px;
         }
@@ -46,30 +47,48 @@
     </style>
 </head>
 <body>
+<br />
 <center>
-<form action="" method="post">
-    <input type="text" name="key">
+<form action="" method="post" >
+    <select name="choose">
+        <option value="username" selected="selected" >Query username</option>
+        <option value="password">Query password</option>
+        <option value="userorpass">Query both</option>
+    </select>
+    <input type="text" name="key" >
     <input type="submit"  value="Search">
 </form>
 </center>
 <?php
-
 include "config.php";
-
-
 if(isset($_POST['key']))
 {
-    $sql = "select * from qq WHERE username like '$_POST[key]%' limit 50";
+    switch ($_POST['choose'])
+    {
+        case "username":
+            $sql = "SELECT * FROM qq WHERE username LIKE '$_POST[key]%'";
+            break;
+        case "password":
+            $sql = "SELECT * FROM qq WHERE password LIKE '$_POST[key]%'";
+            break;
+        case "userorpass":
+            $sql = "SELECT * FROM qq WHERE username LIKE '$_POST[key]%'OR password LIKE '$_POST[key]%'";
+            break;
+        default:
+            $sql = "SELECT * FROM qq WHERE password LIKE '$_POST[key]%'";
+    }
     $conn = mysqli_connect($dbhost, $dbuser,$dbpass,$dbname);
     if(strlen($_POST['key'])>4)
     {
-        if (!$conn) {
-            die('Could not connect: ');
+        if (!$conn)
+        {
+            die('Could not connect databases. ');
         }
         $result = $conn->query($sql);
         if (mysqli_num_rows($result)> 0)
         {
-            echo "<table border=1px solid #999;>";
+            echo "<p align='center'>Found " .mysqli_num_rows($result) ." results.</p>";
+            echo "<table border=1px solid #999; width='343'>";
             echo "<tr><th>username</th><th>password</th></tr>";
             while ($row = $result->fetch_assoc())
             {
@@ -79,17 +98,15 @@ if(isset($_POST['key']))
         }
         else
         {
-            echo "0 results";
+            echo "<p align='center'>Found 0 results.</p>";
         }
     }
     else
     {
-        echo "“".$_POST['key']."”小于5个字符";
+        echo "<p align='center'>[".$_POST['key']."] less than 5 words.<p>";
     }
     $conn->close();
 }
-
-
 ?>
 
 </body>
